@@ -29,9 +29,9 @@ export function TrendChart({ entries, settings }: Props) {
   }))
 
   const regression = linearRegression(actualPoints)
-  const lastPoint = actualPoints.at(-1)!
+  const lastPoint = actualPoints[actualPoints.length - 1]
   const projectedDate = regression
-    ? projectDate(regression, target, parseISO(sorted.at(-1)!.date), lastPoint.x)
+    ? projectDate(regression, target, parseISO(sorted[sorted.length - 1].date), lastPoint.x)
     : null
 
   const chartData = actualPoints.map(p => ({

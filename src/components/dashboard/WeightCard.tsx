@@ -12,7 +12,7 @@ export function WeightCard({ entries, settings }: Props) {
     ? latest.weight_kg - previous.weight_kg
     : null
 
-  const start = settings.start_weight_kg ?? (entries.at(-1)?.weight_kg ?? 0)
+  const start = settings.start_weight_kg ?? (entries[entries.length - 1]?.weight_kg ?? 0)
   const target = settings.target_weight_kg
   const current = latest?.weight_kg ?? start
   const progress = start === target ? 100 : Math.min(100, Math.max(0,
