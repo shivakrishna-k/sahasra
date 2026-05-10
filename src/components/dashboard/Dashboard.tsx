@@ -41,7 +41,7 @@ export function Dashboard() {
       </div>
 
       {settings && <WeightCard entries={entries} settings={settings} />}
-      {settings && entries.length >= 2 && <TrendChart entries={entries} settings={settings} />}
+      {settings && <TrendChart entries={entries} settings={settings} />}
       <TrainingWeek sessions={sessions} />
     </div>
   )

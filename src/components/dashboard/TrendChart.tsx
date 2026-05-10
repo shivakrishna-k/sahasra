@@ -17,9 +17,19 @@ interface Props {
 }
 
 export function TrendChart({ entries, settings }: Props) {
-  if (entries.length < 2) return null
-
   const target = settings.target_weight_kg
+
+  if (entries.length < 2) {
+    return (
+      <div className="bg-surface-800 rounded-2xl p-4">
+        <p className="text-slate-400 text-xs uppercase tracking-widest mb-3">Weight Trend</p>
+        <div className="h-[140px] flex flex-col items-center justify-center gap-1">
+          <p className="text-slate-400 text-sm">No trend yet</p>
+          <p className="text-slate-500 text-xs">Log at least 2 weigh-ins to see your trajectory to {target} kg</p>
+        </div>
+      </div>
+    )
+  }
 
   const sorted = [...entries]
     .sort((a, b) => a.date.localeCompare(b.date))
