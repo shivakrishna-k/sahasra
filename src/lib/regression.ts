@@ -23,6 +23,8 @@ export function linearRegression(
   return { slope, intercept }
 }
 
+// xOffset: the x-value corresponding to referenceDate (the last actual data point's index)
+// Solve for days from referenceDate to when regression line hits target weight
 export function projectDate(
   regression: RegressionResult,
   target: number,

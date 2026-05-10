@@ -29,7 +29,7 @@ function AuthenticatedApp() {
 }
 
 export default function App() {
-  const { session, loading } = useAuth()
+  const { session, loading, signInWithEmail } = useAuth()
 
   if (loading) {
     return (
@@ -41,7 +41,7 @@ export default function App() {
 
   return (
     <BrowserRouter>
-      {session ? <AuthenticatedApp /> : <Login />}
+      {session ? <AuthenticatedApp /> : <Login onSignIn={signInWithEmail} />}
     </BrowserRouter>
   )
 }

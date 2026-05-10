@@ -16,7 +16,10 @@ export function useUserSettings() {
 
   const fetchSettings = useCallback(async () => {
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return
+    if (!user) {
+      setLoading(false)
+      return
+    }
 
     const { data } = await supabase
       .from('user_settings')
@@ -27,11 +30,12 @@ export function useUserSettings() {
     if (data) {
       setSettings(data)
     } else {
-      const { data: created } = await supabase
+      const { data: created, error: createError } = await supabase
         .from('user_settings')
         .insert({ user_id: user.id, ...DEFAULT_SETTINGS })
         .select()
         .single()
+      if (createError) console.error('Failed to create user settings:', createError)
       if (created) setSettings(created)
     }
     setLoading(false)

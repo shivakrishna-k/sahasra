@@ -1,8 +1,10 @@
 import { useState } from 'react'
-import { useAuth } from '../../hooks/useAuth'
 
-export function Login() {
-  const { signInWithEmail } = useAuth()
+interface Props {
+  onSignIn: (email: string) => Promise<{ error: Error | null }>
+}
+
+export function Login({ onSignIn }: Props) {
   const [email, setEmail] = useState('')
   const [sent, setSent] = useState(false)
   const [error, setError] = useState('')
@@ -10,7 +12,7 @@ export function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
-    const { error } = await signInWithEmail(email)
+    const { error } = await onSignIn(email)
     if (error) {
       setError(error.message)
     } else {
