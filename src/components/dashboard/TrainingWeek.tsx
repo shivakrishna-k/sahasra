@@ -1,5 +1,10 @@
-import { startOfWeek, parseISO, isBefore, addDays, format } from 'date-fns'
+import { startOfWeek, isBefore, addDays, format } from 'date-fns'
 import type { TrainingSession } from '../../types'
+
+function parseLocalDate(dateStr: string): Date {
+  const [y, m, d] = dateStr.split('-').map(Number)
+  return new Date(y, m - 1, d)
+}
 
 const TYPE_COLORS: Record<string, string> = {
   sparring: '#f59e0b',
@@ -23,7 +28,7 @@ export function TrainingWeek({ sessions }: Props) {
 
   const thisWeek = sessions
     .filter(s => {
-      const d = parseISO(s.date)
+      const d = parseLocalDate(s.date)
       return !isBefore(d, weekStart) && isBefore(d, weekEnd)
     })
     .slice(0, 5)
@@ -49,7 +54,7 @@ export function TrainingWeek({ sessions }: Props) {
                 {TYPE_ICONS[s.type]} {s.type.charAt(0).toUpperCase() + s.type.slice(1)}
               </span>
               <span className="ml-auto text-slate-500 text-xs">
-                {s.duration_minutes} min · {format(parseISO(s.date), 'EEE')}
+                {s.duration_minutes} min · {format(parseLocalDate(s.date), 'EEE')}
               </span>
             </div>
           ))}

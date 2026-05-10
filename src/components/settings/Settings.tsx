@@ -30,6 +30,7 @@ export function Settings() {
   const [reminderTime, setReminderTime] = useState('21:00')
   const [saving, setSaving] = useState(false)
   const [notifError, setNotifError] = useState('')
+  const [saveError, setSaveError] = useState('')
 
   useEffect(() => {
     if (settings) {
@@ -42,11 +43,13 @@ export function Settings() {
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
     setSaving(true)
-    await updateSettings({
+    setSaveError('')
+    const result = await updateSettings({
       target_weight_kg: parseFloat(targetWeight),
       start_weight_kg: startWeight ? parseFloat(startWeight) : null,
       reminder_time: reminderTime,
     })
+    if (result?.error) setSaveError(result.error.message)
     setSaving(false)
   }
 
@@ -55,7 +58,8 @@ export function Settings() {
     setNotifError('')
 
     if (settings.notifications_enabled) {
-      await updateSettings({ notifications_enabled: false })
+      const result = await updateSettings({ notifications_enabled: false })
+      if (result?.error) setNotifError(result.error.message)
       return
     }
 
@@ -68,7 +72,8 @@ export function Settings() {
       )
       return
     }
-    await updateSettings({ notifications_enabled: true, push_subscription: sub })
+    const result = await updateSettings({ notifications_enabled: true, push_subscription: sub })
+    if (result?.error) setNotifError(result.error.message)
   }
 
   if (!settings) return null
@@ -111,6 +116,7 @@ export function Settings() {
           />
         </div>
 
+        {saveError && <p className="text-red-400 text-sm">{saveError}</p>}
         <button
           type="submit"
           disabled={saving}

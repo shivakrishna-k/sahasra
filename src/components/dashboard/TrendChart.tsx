@@ -2,7 +2,12 @@ import {
   LineChart, Line, XAxis, YAxis, ReferenceLine,
   Tooltip, ResponsiveContainer,
 } from 'recharts'
-import { format, parseISO } from 'date-fns'
+import { format } from 'date-fns'
+
+function parseLocalDate(dateStr: string): Date {
+  const [y, m, d] = dateStr.split('-').map(Number)
+  return new Date(y, m - 1, d)
+}
 import { linearRegression, projectDate } from '../../lib/regression'
 import type { WeightEntry, UserSettings } from '../../types'
 
@@ -20,18 +25,18 @@ export function TrendChart({ entries, settings }: Props) {
     .sort((a, b) => a.date.localeCompare(b.date))
     .slice(-30)
 
-  const baseDate = parseISO(sorted[0].date)
+  const baseDate = parseLocalDate(sorted[0].date)
 
   const actualPoints = sorted.map(e => ({
-    x: Math.round((parseISO(e.date).getTime() - baseDate.getTime()) / 86400000),
+    x: Math.round((parseLocalDate(e.date).getTime() - baseDate.getTime()) / 86400000),
     y: e.weight_kg,
-    label: format(parseISO(e.date), 'MMM d'),
+    label: format(parseLocalDate(e.date), 'MMM d'),
   }))
 
   const regression = linearRegression(actualPoints)
   const lastPoint = actualPoints[actualPoints.length - 1]
   const projectedDate = regression
-    ? projectDate(regression, target, parseISO(sorted[sorted.length - 1].date), lastPoint.x)
+    ? projectDate(regression, target, parseLocalDate(sorted[sorted.length - 1].date), lastPoint.x)
     : null
 
   const chartData = actualPoints.map(p => ({
@@ -41,6 +46,9 @@ export function TrendChart({ entries, settings }: Props) {
   }))
 
   if (projectedDate && regression) {
+    // Bridge: set projected on last actual point so Recharts draws a line segment
+    chartData[chartData.length - 1].projected = lastPoint.y
+    // Terminal: the projected arrival point at target weight
     chartData.push({
       name: format(projectedDate, 'MMM d'),
       actual: undefined as unknown as number,
