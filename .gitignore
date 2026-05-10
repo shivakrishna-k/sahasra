@@ -26,3 +26,4 @@ dist-ssr
 # Environment files
 .env.local
 .env.*.local
+.superpowers/
