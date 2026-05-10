@@ -15,9 +15,13 @@ Deno.serve(async () => {
   const today = now.toISOString().slice(0, 10)
 
   const settingsRes = await fetch(
-    `${supabaseUrl}/rest/v1/user_settings?notifications_enabled=eq.true&reminder_time=gte.${currentHour}:00&reminder_time=lt.${currentHour}:59&push_subscription=not.is.null`,
+    `${supabaseUrl}/rest/v1/user_settings?notifications_enabled=eq.true&reminder_time=gte.${currentHour}:00&reminder_time=lte.${currentHour}:59&push_subscription=not.is.null`,
     { headers: { apikey: supabaseKey, Authorization: `Bearer ${supabaseKey}` } }
   )
+  if (!settingsRes.ok) {
+    console.error('Failed to fetch user_settings', await settingsRes.text())
+    return new Response('error', { status: 500 })
+  }
   const users = await settingsRes.json()
 
   for (const user of users) {
@@ -25,6 +29,10 @@ Deno.serve(async () => {
       `${supabaseUrl}/rest/v1/weight_entries?user_id=eq.${user.user_id}&date=eq.${today}`,
       { headers: { apikey: supabaseKey, Authorization: `Bearer ${supabaseKey}` } }
     )
+    if (!logRes.ok) {
+      console.error('Failed to check weight_entries for user', user.user_id, await logRes.text())
+      continue
+    }
     const logged = await logRes.json()
     if (logged.length > 0) continue
 
